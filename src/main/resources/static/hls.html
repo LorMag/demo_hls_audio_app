@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLS Streaming in Chrome</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> <!-- Подключение hls.js -->
+</head>
+<body>
+<h1>HLS Streaming</h1>
+<audio id="audioPlayer" controls autoplay></audio> <!-- HTML5 video элемент -->
+
+<script>
+    const video = document.getElementById('audioPlayer');
+    const hlsUrl = 'http://localhost:8080/stream/playlist.m3u8'; // URL к вашему HLS-плейлисту (.m3u8)
+
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(hlsUrl); // Загрузка HLS-источника
+        hls.attachMedia(video); // Подключение к video элементу
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            video.play(); // Автоматическое воспроизведение после загрузки
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Поддержка HLS в Safari
+        video.src = hlsUrl;
+        video.addEventListener('loadedmetadata', () => {
+            video.play();
+        });
+    } else {
+        alert("Ваш браузер не поддерживает HLS.");
+    }
+</script>
+</body>
+</html>
